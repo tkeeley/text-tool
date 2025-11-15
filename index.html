@@ -1,0 +1,1175 @@
+<!--
+  Facebook Text Styler
+  Built by: Cup O Code - Tim Keeley
+
+  Have fun, and happy styling.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Facebook Text Styling Tool</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+
+    <meta property="og:title" content="Facebook Text Styling Tool" />
+    <meta
+      property="og:url"
+      content="https://www.cupocode.dev/projects/FbTextTool"
+    />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta
+      property="og:image"
+      content="https://www.cupocode.dev/projects/FbTextTool/cupocode-og.jpg"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:description"
+      content="Style text for Facebook by generating unicode and fun case transforms."
+    />
+
+
+    <style>
+      :root {
+        --bg: #0f172a;
+        --bg-soft: #111827;
+        --card-bg: #020617;
+        --accent: #38bdf8;
+        --accent-soft: rgba(56, 189, 248, 0.1);
+        --border-subtle: rgba(148, 163, 184, 0.3);
+        --text-main: #e5e7eb;
+        --text-muted: #9ca3af;
+        --text-soft: #6b7280;
+        --radius-lg: 18px;
+        --radius-md: 10px;
+        --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.7);
+        --transition-fast: 0.18s ease-out;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .app-shell {
+        width: 100%;
+        max-width: 960px;
+        background: linear-gradient(135deg, #020617, #030712);
+        border-radius: 24px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        box-shadow: var(--shadow-soft);
+        padding: 18px 18px 20px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .app-shell::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background:
+          radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), transparent 60%),
+          radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.12), transparent 55%);
+        opacity: 0.8;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .app-inner {
+        position: relative;
+        z-index: 1;
+      }
+
+      header.app-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+        text-align: center;
+      }
+
+      header .brand-mark {
+        width: 280px;
+        height: 80px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: radial-gradient(circle at 30% 20%, #f97316, #ea580c);
+        padding: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 0 1px rgba(248, 250, 252, 0.1),
+          0 12px 34px rgba(15, 23, 42, 0.9);
+      }
+
+      header .brand-mark img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #020617;
+        border-radius: inherit;
+      }
+
+      header .title-block h1 {
+        font-size: clamp(1.4rem, 2.4vw, 1.6rem);
+        margin: 0;
+        letter-spacing: 0.03em;
+      }
+
+      header .title-block p {
+        margin: 4px 0 0;
+        font-size: 0.8rem;
+        color: var(--text-soft);
+      }
+
+      .layout {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+        gap: 14px;
+      }
+
+      @media (max-width: 768px) {
+        .app-shell {
+          padding: 14px 14px 18px;
+          border-radius: 18px;
+        }
+
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+
+      .panel {
+        background: rgba(15, 23, 42, 0.9);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle);
+        padding: 14px 14px 12px;
+        backdrop-filter: blur(18px);
+      }
+
+      .panel-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        gap: 6px;
+      }
+
+      .panel-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-soft);
+      }
+
+      .section.textarea {
+        padding: 10px;
+      }
+
+      .input-wrapper {
+        position: relative;
+        margin-top: 4px;
+      }
+
+      .input-wrapper textarea {
+        width: 100%;
+        min-height: 120px;
+        resize: vertical;
+        max-height: 260px;
+        font: 400 0.92rem/1.5 system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #020617, #020617 40%);
+        color: var(--text-main);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(148, 163, 184, 0.75);
+        padding: 10px;
+        outline: none;
+        transition: border-color var(--transition-fast),
+          box-shadow var(--transition-fast), background var(--transition-fast);
+      }
+
+      .input-wrapper textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
+        background: #020617;
+      }
+
+      .formatted {
+        margin-top: 2px;
+      }
+
+      .transform-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+        margin-top: 2px;
+      }
+
+      @media (min-width: 600px) {
+        .transform-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      .transform-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid rgba(31, 41, 55, 0.9);
+        padding: 7px 8px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .transform-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        border: 1px solid transparent;
+        background: radial-gradient(circle at top, rgba(56, 189, 248, 0.35), transparent 60%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--transition-fast);
+      }
+
+      .transform-card:hover::before {
+        opacity: 0.7;
+      }
+
+      .transform-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .transform-name {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-main);
+      }
+
+      .transform-tag {
+        font-size: 0.7rem;
+        color: var(--text-soft);
+      }
+
+      .value_inner {
+        background-color: #020617;
+        color: var(--text-main);
+        padding: 6px 8px;
+        border-radius: 8px;
+        border: 1px solid rgba(31, 41, 55, 0.9);
+        min-height: 32px;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+      }
+
+      .value_inner:empty {
+        padding: 0;
+        border: 1px dashed rgba(55, 65, 81, 0.8);
+        min-height: 26px;
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 4px;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .button {
+        border-radius: 999px;
+        border: none;
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        background: radial-gradient(circle at top, #38bdf8, #0ea5e9);
+        color: #020617;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 10px 22px rgba(56, 189, 248, 0.4);
+        transition: transform var(--transition-fast),
+          box-shadow var(--transition-fast), filter var(--transition-fast);
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 32px rgba(56, 189, 248, 0.5);
+        filter: brightness(1.05);
+      }
+
+      .button:active {
+        transform: translateY(0);
+        box-shadow: 0 7px 18px rgba(56, 189, 248, 0.35);
+      }
+
+      .button.secondary {
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--text-main);
+        border: 1px solid rgba(148, 163, 184, 0.9);
+        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.8);
+      }
+
+      .button.secondary:hover {
+        filter: none;
+        border-color: var(--accent);
+      }
+
+      .button.secondary:active {
+        transform: translateY(0);
+      }
+
+      .button span.icon {
+        font-size: 0.9rem;
+      }
+
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .tool-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(31, 41, 55, 0.9);
+        padding: 10px 10px 11px;
+      }
+
+      .tool-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+
+      .tool-card-header h2 {
+        font-size: 0.86rem;
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .tool-card-header p {
+        margin: 0;
+        font-size: 0.75rem;
+        color: var(--text-soft);
+      }
+
+      .tool-body {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .tool-body input[type="text"],
+      .tool-body textarea {
+        width: 100%;
+        font: 400 0.9rem/1.4 system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        border-radius: 10px;
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        background: #020617;
+        padding: 7px 8px;
+        color: var(--text-main);
+        outline: none;
+        transition: border-color var(--transition-fast),
+          box-shadow var(--transition-fast), background var(--transition-fast);
+      }
+
+      .tool-body input[type="text"]:focus,
+      .tool-body textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
+        background: #020617;
+      }
+
+      .tool-body textarea {
+        resize: vertical;
+        min-height: 70px;
+      }
+
+      .tool-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 4px;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .tool-footer small {
+        font-size: 0.72rem;
+        color: var(--text-soft);
+      }
+
+      .icon-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        font-size: 0.95rem;
+        margin-top: 4px;
+      }
+
+      .icon-pill {
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        background: rgba(15, 23, 42, 0.9);
+        cursor: pointer;
+      }
+
+      /* Dev CTA card in footer */
+      .dev-footer-card {
+        margin-top: 16px;
+        padding: 10px 12px 11px;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 60%),
+          rgba(15, 23, 42, 0.96);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .dev-footer-header {
+        font-size: 0.86rem;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .dev-footer-body {
+        font-size: 0.8rem;
+        color: var(--text-soft);
+      }
+
+      .dev-footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 4px;
+      }
+
+      .dev-footer-links a {
+        font-size: 0.78rem;
+        text-decoration: none;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--text-main);
+      }
+
+      .dev-footer-links a:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      footer.app-footer {
+        margin-top: 10px;
+        text-align: center;
+        font-size: 0.75rem;
+        color: var(--text-soft);
+      }
+
+      footer.app-footer a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      footer.app-footer a:hover {
+        color: var(--accent);
+      }
+
+      /* Toast notifications */
+      .toast-container {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 60;
+        pointer-events: none;
+      }
+
+      .toast {
+        background: rgba(15, 23, 42, 0.95);
+        color: var(--text-main);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 0.78rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid rgba(56, 189, 248, 0.6);
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+        opacity: 0;
+        transform: translate3d(0, 8px, 0);
+        transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+        pointer-events: auto;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+
+      .toast span.icon {
+        font-size: 0.9rem;
+      }
+
+      .shouty-hint {
+        font-size: 0.72rem;
+        color: var(--accent);
+        display: none;
+      }
+
+      .shouty-hint.visible {
+        display: inline;
+      }
+
+      @media (max-width: 768px) {
+        .button,
+        .icon-pill {
+          padding: 8px 12px;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* Easter egg modal */
+      .easter-egg-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.83);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+      }
+
+      .easter-egg-backdrop.open {
+        display: flex;
+      }
+
+      .easter-egg-dialog {
+        background: #020617;
+        border-radius: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        padding: 18px 18px 14px;
+        max-width: 360px;
+        width: 100%;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.95);
+      }
+
+      .easter-egg-dialog h2 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+      }
+
+      .easter-egg-dialog p {
+        margin: 0 0 10px;
+        font-size: 0.85rem;
+        color: var(--text-soft);
+      }
+
+      .easter-egg-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 6px;
+      }
+
+      .easter-egg-hint {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+      }
+    </style>
+
+    <script>
+      var notify_strings = {
+        copy: "Copy",
+        copied: "copied",
+        copied_excl: "Copied!",
+        recopied: "re-copied",
+        emptied_clipboard: "emptied clipboard",
+        show_clipboard: "show clipboard"
+      };
+    </script>
+    <script src="includes/jquery-3.1.1.slim.min.js"></script>
+    <script src="includes/clipboard.min.js"></script>
+    <script src="includes/transforms.js"></script>
+    <script src="includes/main.js"></script>
+  </head>
+
+  <body>
+    <div class="app-shell">
+      <div class="app-inner">
+        <header class="app-header">
+          <div class="brand-mark">
+            <img
+              src="https://www.cupocode.com/img/cupocodebrand.png"
+              alt="Cup O Code"
+            />
+          </div>
+          <div class="title-block">
+            <h1>Facebook Text Styler</h1>
+            <p>Type once, then copy stylized text for Facebook, Instagram, LinkedIn, and more.</p>
+          </div>
+        </header>
+
+        <div class="layout">
+          <!-- Left: Input -->
+          <section class="panel section textarea">
+            <div class="panel-title-row">
+              <div class="panel-title">1. Start with your text</div>
+            </div>
+            <div class="input-wrapper">
+              <textarea
+                data-touched="1"
+                placeholder="Paste or type the text you want to style for your post..."
+              ></textarea>
+            </div>
+          </section>
+
+          <!-- Right: Output styles -->
+          <section class="panel" id="stylesPanel">
+            <div class="panel-title-row">
+              <div class="panel-title">2. Pick a style and copy</div>
+            </div>
+
+            <div class="formatted">
+              <div class="transform-grid">
+                <div class="example transform-card" data-transform-slug="bold">
+                  <div class="transform-header">
+                    <div class="transform-name">Bold (serif)</div>
+                    <div class="transform-tag">Headline pop</div>
+                  </div>
+                  <span class="value_inner times" data-transform="tu"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="bold-sans">
+                  <div class="transform-header">
+                    <div class="transform-name">Bold (sans)</div>
+                    <div class="transform-tag">Clean and modern</div>
+                  </div>
+                  <span class="value_inner times" data-transform="tt"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="italic">
+                  <div class="transform-header">
+                    <div class="transform-name">Italic (serif)</div>
+                    <div class="transform-tag">Emphasis</div>
+                  </div>
+                  <span class="value_inner times" data-transform="tw"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="italic-sans">
+                  <div class="transform-header">
+                    <div class="transform-name">Italic (sans)</div>
+                    <div class="transform-tag">Subtle tilt</div>
+                  </div>
+                  <span class="value_inner times" data-transform="ty"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="bold-italic">
+                  <div class="transform-header">
+                    <div class="transform-name">Bold + italic (serif)</div>
+                    <div class="transform-tag">High impact</div>
+                  </div>
+                  <span class="value_inner times" data-transform="tx"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="bold-italic-sans">
+                  <div class="transform-header">
+                    <div class="transform-name">Bold + italic (sans)</div>
+                    <div class="transform-tag">Modern highlight</div>
+                  </div>
+                  <span class="value_inner times" data-transform="tz"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="script">
+                  <div class="transform-header">
+                    <div class="transform-name">Script</div>
+                    <div class="transform-tag">Handwritten vibe</div>
+                  </div>
+                  <span
+                    data-href="/script/#preview_script"
+                    class="preview"
+                  ></span>
+                  <span class="value_inner times" data-transform="tA"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="bold-script">
+                  <div class="transform-header">
+                    <div class="transform-name">Bold script</div>
+                    <div class="transform-tag">Statement lines</div>
+                  </div>
+                  <span
+                    data-href="/script/#preview_bold-script"
+                    class="preview"
+                  ></span>
+                  <span class="value_inner times" data-transform="tC"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="fraktur">
+                  <div class="transform-header">
+                    <div class="transform-name">Fraktur</div>
+                    <div class="transform-tag">Gothic style</div>
+                  </div>
+                  <span
+                    data-href="/fraktur/#preview_fraktur"
+                    class="preview"
+                  ></span>
+                  <span class="value_inner times" data-transform="tE"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="bold-fraktur">
+                  <div class="transform-header">
+                    <div class="transform-name">Bold fraktur</div>
+                    <div class="transform-tag">Heavy gothic</div>
+                  </div>
+                  <span
+                    data-href="/fraktur/#preview_bold-fraktur"
+                    class="preview"
+                  ></span>
+                  <span class="value_inner times" data-transform="tF"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="example transform-card" data-transform-slug="upside-down">
+                  <div class="transform-header">
+                    <div class="transform-name">Upside down</div>
+                    <div class="transform-tag">Playful attention grabber</div>
+                  </div>
+                  <span
+                    data-href="/upside-down/#preview_upside-down"
+                    class="preview"
+                  ></span>
+                  <span class="value_inner times" data-transform="tc"></span>
+                  <div class="buttons">
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Underline style card (manual generate) -->
+                <div class="example transform-card" data-transform-slug="underline-unicode">
+                  <div class="transform-header">
+                    <div class="transform-name">Underline (Unicode)</div>
+                    <div class="transform-tag">Strong hooks and emphasis</div>
+                  </div>
+                  <span class="value_inner times" id="underlineValue"></span>
+                  <div class="buttons">
+                    <button
+                      class="button secondary"
+                      type="button"
+                      onclick="generateUnderlineFromInput();"
+                    >
+                      <span class="icon">✨</span><span>Generate underline</span>
+                    </button>
+                    <button class="copy button" type="button">
+                      <span class="icon">📋</span><span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Utilities -->
+        <section class="stack" style="margin-top: 14px;">
+          <!-- Icons helper -->
+          <div class="tool-card">
+            <div class="tool-card-header">
+              <h2>Quick bullet icons</h2>
+               <p>Clip to copy commonly used icons.</p>
+            </div>
+            <div class="tool-body">
+              <div class="icon-row">
+                <span class="icon-pill">📍</span>
+                <span class="icon-pill">📌</span>
+                <span class="icon-pill">✓</span>
+                <span class="icon-pill">✔</span>
+                <span class="icon-pill">•</span>
+                <span class="icon-pill">⌲</span>
+                <span class="icon-pill">➤</span>
+                <span class="icon-pill">►</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Case tools (Sentence, Upper, Meme-case, SHOUTY fix) -->
+          <div class="tool-card">
+            <div class="tool-card-header">
+              <h2>Case tools + meme text</h2>
+              <p>Clean up your copy or meme it up for fun posts.</p>
+            </div>
+            <div class="tool-body">
+              <form name="testForm" onsubmit="return false;">
+                <textarea
+                  name="theString"
+                  id="theString"
+                  cols="50"
+                  rows="4"
+                  placeholder="Paste text to convert. Use the buttons below for sentence case, upper case, meme case, or fixing SHOUTY text."
+                ></textarea>
+                <div class="tool-footer">
+                  <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                    <button
+                      class="button secondary"
+                      onclick="convertToSentenceCase();return false;"
+                    >
+                      Sentence case
+                    </button>
+                    <button
+                      class="button secondary"
+                      onclick="convertToUpperCase();return false;"
+                    >
+                      UPPER CASE
+                    </button>
+                    <button
+                      class="button secondary"
+                      onclick="convertToMemeCase();return false;"
+                    >
+                      mEmE cAsE
+                    </button>
+                    <button
+                      class="button secondary"
+                      id="fixShoutyBtn"
+                      onclick="fixShoutyText();return false;"
+                      type="button"
+                    >
+                      Fix SHOUTY text
+                    </button>
+                  </div>
+                  <small>
+                    <span id="shoutyHint" class="shouty-hint">
+                      Looks like this text is shouting. Click "Fix SHOUTY text" to calm it down.
+                    </span>
+                  </small>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <!-- Developer promo block -->
+        <section class="dev-footer-card">
+          <div class="dev-footer-header">
+            Built by Cup O Code
+          </div>
+          <div class="dev-footer-body">
+            We build custom websites and marketing solutions that help your business get found and grow online.
+          </div>
+          <div class="dev-footer-links">
+            <a href="https://cupocode.com/" target="_blank" rel="noopener noreferrer">
+              Visit our website
+            </a>
+            <a href="https://www.facebook.com/cupocode" target="_blank" rel="noopener noreferrer">
+              Facebook
+            </a>
+            <a href="https://www.instagram.com/cupocode" target="_blank" rel="noopener noreferrer">
+              Instagram
+            </a>
+            <a href="https://www.linkedin.com/company/cup-o-code" target="_blank" rel="noopener noreferrer">
+              LinkedIn
+            </a>
+          </div>
+        </section>
+
+        <footer class="app-footer">
+          <p>
+            <a href="https://www.cupocode.com">Cup O Code</a>
+            <span> &copy;
+              <script>
+                document.write(new Date().getFullYear());
+              </script>
+            </span>
+          </p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Easter egg modal -->
+    <div class="easter-egg-backdrop" id="easterEggModal">
+      <div class="easter-egg-dialog">
+        <h2>Whack-A-Nick unlocked</h2>
+        <p>
+          You discovered the hidden Easter egg. Ready to take a break and play a quick game?
+        </p>
+        <p class="easter-egg-hint">
+          (Bonus hint for devs: you triggered this by typing “whackanick”.)
+        </p>
+        <div class="easter-egg-actions">
+          <button class="button secondary" id="closeEasterEgg">Close</button>
+          <button class="button" id="playWhackANick">Play Whack-A-Nick</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Utility scripts -->
+    <script>
+      // Sentence case
+      function firstLetterUpper(theString) {
+        var newString = theString
+          .toLowerCase()
+          .replace(/(^\s*\w|[\.\!\?]\s*\w)/g, function (c) {
+            return c.toUpperCase();
+          });
+        return newString;
+      }
+
+      function convertToSentenceCase() {
+        var theString = document.testForm.theString.value;
+        var newString = firstLetterUpper(theString || "");
+        document.getElementById("theString").value = newString;
+      }
+
+      // Upper case
+      function toUpperCase(theString) {
+        return (theString || "").toUpperCase();
+      }
+
+      function convertToUpperCase() {
+        var theString = document.testForm.theString.value;
+        var newString = toUpperCase(theString);
+        document.getElementById("theString").value = newString;
+      }
+
+      // Meme-case generator
+      function toMemeCase(str) {
+        var result = "";
+        var makeUpper = true;
+
+        for (var i = 0; i < str.length; i++) {
+          var ch = str[i];
+          if (/[a-zA-Z]/.test(ch)) {
+            result += makeUpper ? ch.toUpperCase() : ch.toLowerCase();
+            makeUpper = !makeUpper;
+          } else {
+            result += ch;
+          }
+        }
+
+        return result;
+      }
+
+      function convertToMemeCase() {
+        var theString = document.testForm.theString.value || "";
+        var newString = toMemeCase(theString);
+        document.getElementById("theString").value = newString;
+      }
+
+      // SHOUTY detection helper
+      function isShouty(str) {
+        if (!str) return false;
+        var letters = str.replace(/[^A-Za-z]/g, "");
+        if (!letters) return false;
+        var upperCount = letters.replace(/[^A-Z]/g, "").length;
+        return upperCount / letters.length > 0.8;
+      }
+
+      function updateShoutyHint() {
+        var textarea = document.getElementById("theString");
+        var hint = document.getElementById("shoutyHint");
+        var btn = document.getElementById("fixShoutyBtn");
+        if (!textarea || !hint || !btn) return;
+
+        var text = textarea.value || "";
+        if (isShouty(text)) {
+          hint.classList.add("visible");
+        } else {
+          hint.classList.remove("visible");
+        }
+      }
+
+      function fixShoutyText() {
+        var textarea = document.getElementById("theString");
+        if (!textarea) return;
+        var text = textarea.value || "";
+        if (!text) return;
+
+        // Calm shouting: lower case, then sentence case
+        var lower = text.toLowerCase();
+        var fixed = firstLetterUpper(lower);
+        textarea.value = fixed;
+        updateShoutyHint();
+      }
+
+      // Underline generator (manual trigger from main input)
+      function generateUnderlineFromInput() {
+        var sourceTextarea = document.querySelector(".section.textarea textarea");
+        var underlineSpan = document.getElementById("underlineValue");
+        if (!sourceTextarea || !underlineSpan) return;
+
+        var text = sourceTextarea.value || "";
+        var output = "";
+
+        for (var i = 0; i < text.length; i++) {
+          var ch = text[i];
+          if (ch === " ") {
+            output += " ";
+          } else {
+            output += ch + "\u0332";
+          }
+        }
+
+        underlineSpan.textContent = output;
+      }
+
+      // Toast notifications
+      function showToast(message) {
+        var container = document.getElementById("toastContainer");
+        if (!container) return;
+
+        var toast = document.createElement("div");
+        toast.className = "toast";
+        toast.innerHTML =
+          '<span class="icon">✅</span><span>' + (message || "Copied!") + "</span>";
+
+        container.appendChild(toast);
+
+        requestAnimationFrame(function () {
+          toast.classList.add("show");
+        });
+
+        setTimeout(function () {
+          toast.classList.remove("show");
+          setTimeout(function () {
+            if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+            }
+          }, 200);
+        }, 1500);
+      }
+
+      (function () {
+        // SHOUTY hint live update
+        var caseTextarea = document.getElementById("theString");
+        if (caseTextarea) {
+          caseTextarea.addEventListener("input", updateShoutyHint);
+        }
+
+        // Toast on copy button clicks (styles + underline)
+        document.addEventListener("click", function (e) {
+          var copyBtn = e.target.closest(".copy.button");
+          if (!copyBtn) return;
+
+          var example = copyBtn.closest(".example");
+          var name = "";
+          if (example) {
+            var titleEl = example.querySelector(".transform-name");
+            if (titleEl) {
+              name = titleEl.textContent.trim();
+            }
+          }
+          var msg = name ? name + " copied to clipboard." : "Styled text copied.";
+          showToast(msg);
+        });
+
+        // Quick copy for icon pills
+        document.addEventListener("click", function (e) {
+          var pill = e.target.closest(".icon-pill");
+          if (!pill) return;
+          var text = pill.textContent || "";
+          if (!text) return;
+
+          var temp = document.createElement("textarea");
+          temp.style.position = "fixed";
+          temp.style.opacity = "0";
+          temp.value = text;
+          document.body.appendChild(temp);
+          temp.select();
+          try {
+            document.execCommand("copy");
+          } catch (err) {}
+          document.body.removeChild(temp);
+
+          showToast("Icon copied: " + text);
+        });
+      })();
+    </script>
+  </body>
+</html>
